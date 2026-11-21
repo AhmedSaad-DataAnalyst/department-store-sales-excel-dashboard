@@ -1,0 +1,81 @@
+// DAX measures in the Data Model (table Sales_Clean)
+
+// Total revenue (whole number, thousands separator)
+[Total Revenue] :=
+    SUM(Sales_Clean[Revenue])
+
+// Revenue target, open days only (whole number, thousands separator)
+[Revenue Goal] :=
+    SUM(Sales_Clean[Revenue_Goal])
+
+// Revenue on open days (whole number, thousands separator)
+[Revenue Open] :=
+    CALCULATE(SUM(Sales_Clean[Revenue]), Sales_Clean[Open_Day] = 1)
+
+// Revenue on open days / target (percent, 1 decimal)
+[Achievement %] :=
+    DIVIDE([Revenue Open], [Revenue Goal])
+
+// Revenue minus target (open days) (whole number, thousands separator)
+[Revenue Gap] :=
+    SUM(Sales_Clean[Revenue_Gap])
+
+// Revenue x margin (whole number, thousands separator)
+[Gross Profit] :=
+    SUM(Sales_Clean[Gross_Profit])
+
+// Gross profit / revenue (percent, 1 decimal)
+[Margin %] :=
+    DIVIDE([Gross Profit], [Total Revenue])
+
+// Target margin weighted by revenue target (percent, 1 decimal)
+[Margin Goal %] :=
+    DIVIDE(SUMX(Sales_Clean, Sales_Clean[Revenue_Goal] * Sales_Clean[Margin_Goal_Pct]), [Revenue Goal])
+
+// Customers served (whole number, thousands separator)
+[Total Customers] :=
+    SUM(Sales_Clean[Customers])
+
+// Customers who bought (whole number, thousands separator)
+[Total Buyers] :=
+    SUM(Sales_Clean[Buyers])
+
+// Buyers / customers (percent, 1 decimal)
+[Conversion %] :=
+    DIVIDE([Total Buyers], [Total Customers])
+
+// Revenue per buyer (2 decimals)
+[Avg Ticket] :=
+    DIVIDE([Total Revenue], [Total Buyers])
+
+// Open seller-days (whole number, thousands separator)
+[Seller Days] :=
+    SUM(Sales_Clean[Open_Day])
+
+// Share of open seller-days at or above revenue target (percent, 1 decimal)
+[Goal Hit %] :=
+    DIVIDE(SUM(Sales_Clean[Goal_Met]), [Seller Days])
+
+// Share of open seller-days at or above margin target (percent, 1 decimal)
+[Margin Goal Hit %] :=
+    DIVIDE(SUM(Sales_Clean[Margin_Goal_Met]), [Seller Days])
+
+// Revenue and margin target on the same day (percent, 1 decimal)
+[Both Goals Hit %] :=
+    DIVIDE(CALCULATE(COUNTROWS(Sales_Clean), Sales_Clean[Goal_Met] = 1, Sales_Clean[Margin_Goal_Met] = 1), [Seller Days])
+
+// Number of sellers (whole number, thousands separator)
+[Sellers] :=
+    DISTINCTCOUNT(Sales_Clean[Seller])
+
+// Average revenue per open seller-day (whole number, thousands separator)
+[Revenue per Seller Day] :=
+    DIVIDE([Revenue Open], [Seller Days])
+
+// Days the store was closed (whole number, thousands separator)
+[Closed Days] :=
+    CALCULATE(DISTINCTCOUNT(Sales_Clean[Date]), Sales_Clean[Store_Closed] = 1)
+
+// Days the store was open (whole number, thousands separator)
+[Open Days] :=
+    CALCULATE(DISTINCTCOUNT(Sales_Clean[Date]), Sales_Clean[Open_Day] = 1)
